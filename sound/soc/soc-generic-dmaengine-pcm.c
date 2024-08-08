@@ -15,7 +15,7 @@
 
 #include <sound/dmaengine_pcm.h>
 
-static unsigned int prealloc_buffer_size_kbytes = 512;
+static unsigned int prealloc_buffer_size_kbytes = 1024;
 module_param(prealloc_buffer_size_kbytes, uint, 0444);
 MODULE_PARM_DESC(prealloc_buffer_size_kbytes, "Preallocate DMA buffer size (KB).");
 

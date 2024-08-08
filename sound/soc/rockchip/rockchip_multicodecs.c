@@ -269,7 +269,7 @@ static irqreturn_t headset_det_irq_thread(int irq, void *data)
 {
 	struct multicodecs_data *mc_data = (struct multicodecs_data *)data;
 
-	queue_delayed_work(system_power_efficient_wq, &mc_data->handler, msecs_to_jiffies(200));
+	mod_delayed_work(system_power_efficient_wq, &mc_data->handler, msecs_to_jiffies(500));
 
 	return IRQ_HANDLED;
 };
@@ -626,8 +626,32 @@ static int wait_locked_card(struct device_node *np, struct device *dev)
 	return ret;
 }
 
+static void rk_test_shutdown(struct snd_pcm_substream *substream)
+{
+    struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+    struct multicodecs_data *mc_data = snd_soc_card_get_drvdata(rtd->card);
+
+    gpiod_set_value_cansleep(mc_data->spk_ctl_gpio,0);
+    gpiod_set_value_cansleep(mc_data->hp_ctl_gpio,0);
+}
+
+static int rk_test_startup(struct snd_pcm_substream *substream)
+{
+  struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+  struct multicodecs_data *mc_data = snd_soc_card_get_drvdata(rtd->card);
+
+  /*fix double startup process when headphone is plugged in.*/
+  if (extcon_get_state(mc_data->extcon, EXTCON_JACK_HEADPHONE)) {
+    if (gpiod_get_value_cansleep(mc_data->hp_ctl_gpio))
+      return -ENOTSUPP;
+  }
+  return 0;
+}
+
 static struct snd_soc_ops rk_ops = {
 	.hw_params = rk_multicodecs_hw_params,
+  .shutdown = rk_test_shutdown,
+  .startup = rk_test_startup,
 };
 
 SND_SOC_DAILINK_DEFS(hifi,

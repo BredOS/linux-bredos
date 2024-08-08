@@ -84,6 +84,7 @@
 		compatible = "regulator-fixed";
 		regulator-name = "combophy_avdd0v85";
 		regulator-boot-on;
+  //  regulator-always-on;
 		regulator-min-microvolt = <850000>;
 		regulator-max-microvolt = <850000>;
 		vin-supply = <&vdd_0v85_s0>;
@@ -157,7 +158,7 @@
     dmic: dmic {
         status = "okay";
         compatible = "simple-audio-card";
-        simple-audio-card,name = "rockchip,dmic";
+        simple-audio-card,name = "rockchip-dmic";
 
         simple-audio-card,dai-link@0 {
             format = "pdm";
@@ -185,8 +186,8 @@
 		pinctrl-0 = <&uart9m2_rtsn>, <&bt_reset_gpio>, <&bt_wake_gpio>, <&bt_wake_host_irq>;
 		pinctrl-1 = <&uart9_gpios>;
 		BT,power_gpio    = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
-		//BT,wake_gpio     = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
-		//BT,wake_host_irq = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
+		BT,wake_gpio     = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
+		BT,wake_host_irq = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 	};
 
@@ -234,10 +235,6 @@
 };
 
 &dp0_sound {
-  /*
-  pinctrl-0 = <&cc_int0_hpdin_l>;
-  hpd-gpios = <&gpio0 RK_PC4 GPIO_ACTIVE_HIGH>;
-  */
   status = "okay";
 };
 
@@ -393,7 +390,7 @@
 				vactive = <2560>;
 				hfront-porch = <60>;
 				hsync-len = <20>;
-				hback-porch = <40>;
+				hback-porch = <20>;
 				vfront-porch = <112>;
 				vsync-len = <4>;
 				vback-porch = <18>;
@@ -468,6 +465,7 @@
         himax,irq-gpio = <&gpio1 RK_PB5 GPIO_ACTIVE_HIGH>;
         himax,rst-gpio = <&gpio1 RK_PB4 GPIO_ACTIVE_HIGH>;
         report_type = <1>;
+        panel = <&dsi0_panel>;
 	};
 };
 
@@ -496,7 +494,7 @@
 		interrupts = <RK_PC4 IRQ_TYPE_LEVEL_LOW>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&usbc0_int>;
-		vbus-supply = <&vbus_typec>;
+		vbus-supply = <&vbus5v0_typec>;
 		status = "okay";
 
 		ports {
@@ -584,38 +582,38 @@
 		status = "disabled";
 	};
 
-    sc8886: sc8886@6b {
-        status = "okay";
-        compatible = "southchip,sc8886";
-        reg = <0x6b>;
-        ti,usb-charger-detection = <&usbc0>;
+  sc8886: sc8886@6b {
+      status = "okay";
+      compatible = "southchip,sc8886";
+      reg = <0x6b>;
+      ti,usb-charger-detection = <&usbc0>;
 
-        interrupt-parent = <&gpio0>;
-        interrupts = <RK_PD5 IRQ_TYPE_LEVEL_LOW>;
-        otg-mode-en-gpios = <&gpio4 RK_PA6 GPIO_ACTIVE_HIGH>;
-        pinctrl-names = "default";
-        pinctrl-0 = <&charger_ok>;
-        extcon = <&usbc0>;
-        ti,battery = <&battery>;
-        ti,charge-current = <2500000>;
-        ti,max-input-voltage = <20000000>;
-        ti,max-input-current = <5000000>;
-        ti,max-charge-voltage = <13200000>;
-        ti,input-current = <3000000>;
-        ti,input-current-sdp = <3000000>;
-        ti,input-current-dcp = <3000000>;
-        ti,input-current-cdp = <3000000>;
-        ti,minimum-sys-voltage = <9216000>;
-        ti,otg-voltage = <5000000>;
-        ti,otg-current = <3000000>;
-        pd-charge-only = <0>;
-        regulators {
-            vbus5v0_typec: vbus5v0-typec {
-            regulator-compatible = "otg-vbus";
-            regulator-name = "vbus5v0_typec";
-			};
-        };
-    };
+      interrupt-parent = <&gpio0>;
+      interrupts = <RK_PD5 IRQ_TYPE_LEVEL_LOW>;
+      otg-mode-en-gpios = <&gpio4 RK_PA6 GPIO_ACTIVE_HIGH>;
+      pinctrl-names = "default";
+      pinctrl-0 = <&charger_ok>;
+      extcon = <&usbc0>;
+      ti,battery = <&battery>;
+      ti,charge-current = <2500000>;
+      ti,max-input-voltage = <20000000>;
+      ti,max-input-current = <5000000>;
+      ti,max-charge-voltage = <13200000>;
+      ti,input-current = <3000000>;
+      ti,input-current-sdp = <3000000>;
+      ti,input-current-dcp = <3000000>;
+      ti,input-current-cdp = <3000000>;
+      ti,minimum-sys-voltage = <9216000>;
+      ti,otg-voltage = <5000000>;
+      ti,otg-current = <3000000>;
+      pd-charge-only = <0>;
+      regulators {
+          vbus5v0_typec: vbus5v0-typec {
+          regulator-compatible = "otg-vbus";
+          regulator-name = "vbus5v0_typec";
+		};
+      };
+  };
 };
 
 &i2c7 {
@@ -699,7 +697,8 @@
 &pinctrl {
 	charger {
 		charger_ok: charger_ok {
-			rockchip,pins = <0 RK_PD5 RK_FUNC_GPIO &pcfg_pull_up>;
+			rockchip,pins = <0 RK_PD5 RK_FUNC_GPIO &pcfg_pull_up>,
+                      <4 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
@@ -816,13 +815,6 @@
               rockchip,pins = <1 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
       };
   };
-/*
-  vga {
-    cc_int0_hpdin_l: cc-int0-hpdin-l {
-      rockchip,pins = <0 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
-    };
-  };
-  */
 };
 
 &pwm14 {
@@ -871,6 +863,10 @@
 	status = "okay";
 };
 
+&vepu {
+  status = "okay";
+};
+
 &rockchip_suspend {
 	status = "okay";
 	rockchip,sleep-debug-en = <1>;
@@ -892,28 +888,24 @@
 	status = "okay";
 };
 
-&spi2 {
-	status = "okay";
-};
+&spi3 {
+  status = "okay";
+  assigned-clocks = <&cru CLK_SPI3>;
+  assigned-clock-rates = <200000000>;
+  pinctrl-names = "default";
+  pinctrl-0 = <&spi3m1_cs0 &spi3m1_pins>;
+  num-cs = <1>;
+  madev@0 {
+    status = "okay";
+    compatible = "microarray,microarray-fp";
+    fingerprint,touch-int-gpio = <&gpio3 RK_PB0 IRQ_TYPE_EDGE_RISING>;
+    pinctrl-names = "default";
 
-
-&spi0 {
-	status = "disabled";
-	assigned-clocks = <&cru CLK_SPI0>;
-	assigned-clock-rates = <200000000>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&spi0m2_cs0 &spi0m2_pins>;
-	num-cs = <1>;
-    madev@0 {
-		status = "okay";
-		compatible = "microarray,microarray-fp";
-		/*irq-gpio = <&gpio3 RK_PB0 IRQ_TYPE_EDGE_RISING>;*/
-        fingerprint,touch-int-gpio = <&gpio3 RK_PB0 IRQ_TYPE_EDGE_RISING>;
-		reg = <0>;
-		spi-max-frequency = <6000000>;
-		spi-cpha;
-		spi-cpol;
-	};
+    reg = <0>;
+    spi-max-frequency = <6000000>;
+    spi-cpha;
+    spi-cpol;
+  };
 };
 
 &tsadc {
@@ -930,23 +922,25 @@
 	rockchip,typec-vbus-det;
 };
 
+/*
 &u2phy2_host {
-	//phy-supply = <&vcc5v0_host_en>;
+	phy-supply = <&vcc5v0_host_en>;
 };
 
 &u2phy3_host {
-	//phy-supply = <&vcc5v0_host_en>;
+	phy-supply = <&vcc5v0_host_en>;
 };
-
+*/
 &usbdp_phy0 {
 	orientation-switch;
 	svid = <0xff01>;
 	sbu1-dc-gpios = <&gpio4 RK_PA0 GPIO_ACTIVE_HIGH>;
 	sbu2-dc-gpios = <&gpio4 RK_PA1 GPIO_ACTIVE_HIGH>;
+/*
+  keep-dp-normal;
 	pinctrl-names = "default";
 	pinctrl-0 = <&sbu1_dc &sbu2_dc>;
-  keep-dp-normal;
-
+*/
 	port {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -982,8 +976,6 @@
 &usbhost_dwc3_0 {
 	status = "disabled";
 };
-
-
 
 &vdpu {
 	status = "okay";

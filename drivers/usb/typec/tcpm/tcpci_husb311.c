@@ -278,6 +278,11 @@ static int husb311_probe(struct i2c_client *client,
 			return ret;
 	}
 
+  if (regulator_get_mode(chip->vbus) == REGULATOR_MODE_INVALID) {
+          pr_info("[DEBUG] husb311 -> vbus = NULL\n");
+          chip->vbus = NULL;
+  }
+
 	ret = husb311_sw_reset(chip);
 	if (ret < 0) {
 		dev_err(chip->dev, "fail to soft reset, ret = %d\n", ret);
