@@ -428,6 +428,7 @@
   max-frequency = <150000000>;
   no-sdio;
   no-mmc;
+  bus-width = <4>;
   cap-sd-highspeed;
   cap-mmc-highspeed;
  // clock-frequency = <100000000>;

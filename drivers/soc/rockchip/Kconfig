@@ -354,4 +354,9 @@ source "drivers/soc/rockchip/minidump/Kconfig"
 
 endmenu
 
+config ROCKCHIP_FYDETAB_GRF
+	bool "initialize grf with specific values on FydeTab"
+	default n
+	help
+	  If unsure, say n.
 endif

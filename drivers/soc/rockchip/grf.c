@@ -242,10 +242,28 @@ static const struct rockchip_grf_info rk3566_pipegrf __initconst = {
 	.num_values = ARRAY_SIZE(rk3566_defaults),
 };
 
+#define RK3566_GRF_USB3OTG0_CON1	0x0104
+
+static const struct rockchip_grf_value rk3566_defaults[] __initconst = {
+	{ "usb3otg port switch", RK3566_GRF_USB3OTG0_CON1, HIWORD_UPDATE(0, 1, 12) },
+	{ "usb3otg clock switch", RK3566_GRF_USB3OTG0_CON1, HIWORD_UPDATE(1, 1, 7) },
+	{ "usb3otg disable usb3", RK3566_GRF_USB3OTG0_CON1, HIWORD_UPDATE(1, 1, 0) },
+};
+
+static const struct rockchip_grf_info rk3566_pipegrf __initconst = {
+	.values = rk3566_defaults,
+	.num_values = ARRAY_SIZE(rk3566_defaults),
+};
+
+#define RK3588_SYS_GRF_SOC_CON6 	0x0318
 #define RK3588_SYS_GRF_SOC_CON7		0x031c
 
 static const struct rockchip_grf_value rk3588_sys_grf_defaults[] __initconst = {
 	{ "Connect EDP hpd to IO", RK3588_SYS_GRF_SOC_CON7, HIWORD_UPDATE(0x3, 0x3, 14) },
+#ifdef CONFIG_ROCKCHIP_FYDETAB_GRF
+	/* Without this, MiscroSD card won't work normally with bus width 4 */
+	{ "jtag switching", RK3588_SYS_GRF_SOC_CON6, HIWORD_UPDATE(0x0, 0x1, 14) },
+#endif
 };
 
 static const struct rockchip_grf_info rk3588_sys_grf __initconst = {
