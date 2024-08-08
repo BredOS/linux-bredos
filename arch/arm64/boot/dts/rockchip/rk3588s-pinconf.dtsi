@@ -257,4 +257,10 @@
 		output-low;
 		bias-disable;
 	};
+
+    /omit-if-no-ref/
+	pcfg_pull_up_drv_level_12: pcfg-pull-up-drv-level-12 {
+		bias-pull-up;
+		drive-strength = <12>;
+	};
 };
