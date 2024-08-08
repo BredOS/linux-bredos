@@ -203,6 +203,7 @@ struct panel_simple {
 
 	ktime_t prepared_time;
 	ktime_t unprepared_time;
+	bool reset_enable_combined;
 
 	const struct panel_desc *desc;
 
@@ -579,7 +580,11 @@ static int panel_simple_unprepare(struct drm_panel *panel)
 		}
 	}
 
-	gpiod_direction_output(p->reset_gpio, 1);
+	if (p->reset_enable_combined)
+		gpiod_direction_output(p->reset_gpio, 0);
+	else
+		gpiod_direction_output(p->reset_gpio, 1);
+
 	gpiod_direction_output(p->enable_gpio, 0);
 
 	panel_simple_regulator_disable(p);
@@ -618,6 +623,11 @@ static int panel_simple_prepare(struct drm_panel *panel)
 		panel_simple_msleep(p->desc->delay.reset);
 
 	gpiod_direction_output(p->reset_gpio, 0);
+
+  if (p->reset_enable_combined) {
+    msleep(5);
+    gpiod_direction_output(p->reset_gpio, 1);
+  }
 
 	if (p->desc->delay.init)
 		panel_simple_msleep(p->desc->delay.init);
@@ -910,6 +920,7 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 	}
 
 	panel->power_invert = of_property_read_bool(dev->of_node, "power-invert");
+  panel->reset_enable_combined = of_property_read_bool(dev->of_node, "reset-enable-combined");
 
 	ddc = of_parse_phandle(dev->of_node, "ddc-i2c-bus", 0);
 	if (ddc) {

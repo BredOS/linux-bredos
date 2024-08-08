@@ -282,16 +282,14 @@
 	rockchip,lane-rate = <676000>;
 	dsi0_panel: panel@0 {
 		status = "okay";
-		compatible = "simple-panel-dsi-fyde";
+		compatible = "simple-panel-dsi";
 		reg = <0>;
 		backlight = <&backlight>;
-		power-supply = <&vcc_lcd_en>;
-		//enable-gpios = <&gpio4 RK_PA3 GPIO_ACTIVE_HIGH>;
-		avdd-gpios = <&gpio3 RK_PA7 GPIO_ACTIVE_HIGH>;
-		avee-gpios = <&gpio3 RK_PA6 GPIO_ACTIVE_HIGH>;
+		power-supply = <&vcc_avee>;
 		reset-gpios = <&gpio3 RK_PC6 GPIO_ACTIVE_HIGH>;
+    reset-enable-combined;
 		pinctrl-names = "default";
-		pinctrl-0 = <&avdd_lcd_gpio &avee_lcd_gpio &lcd_rst_gpio>;
+		pinctrl-0 = <&lcd_rst_gpio>;
 		reset-delay-ms = <120>;
 		enable-delay-ms = <120>;
 		prepare-delay-ms = <120>;
@@ -994,7 +992,8 @@
 };
 
 &route_dsi0 {
-	status = "disabled";
+  u-boot-status = "disabled";
+  status = "okay";
 	connect = <&vp2_out_dsi0>;
 };
 

@@ -176,15 +176,36 @@
     };
   };
 
-	vcc_lcd_en: vcc-lcd-en {
-		compatible = "regulator-fixed";
-		regulator-name = "vcc_lcd_en";
-		regulator-boot-on;
-		enable-active-high;
-		gpio = <&gpio4 RK_PA3 GPIO_ACTIVE_HIGH>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&vcc_lcd_en_pin>;
-	};
+  vcc_lcd_en: vcc-lcd-en {
+    compatible = "regulator-fixed";
+    regulator-name = "vcc_lcd_en";
+    enable-active-high;
+    gpio = <&gpio4 RK_PA3 GPIO_ACTIVE_HIGH>;
+    pinctrl-names = "default";
+    pinctrl-0 = <&vcc_lcd_en_pin>;
+  };
+
+  vcc_avdd: vcc-avdd {
+    compatible = "regulator-fixed";
+    regulator-name = "vcc_avdd";
+    enable-active-high;
+    gpio = <&gpio3 RK_PA7 GPIO_ACTIVE_HIGH>;
+    pinctrl-names = "default";
+    startup-delay-us = <3>;
+    pinctrl-0 = <&avdd_lcd_gpio>;
+    vin-supply = <&vcc_lcd_en>;
+  };
+
+  vcc_avee: vcc-avee {
+    compatible = "regulator-fixed";
+    regulator-name = "vcc_avee";
+    enable-active-high;
+    gpio = <&gpio3 RK_PA6 GPIO_ACTIVE_HIGH>;
+    pinctrl-names = "default";
+    startup-delay-us = <3>;
+    pinctrl-0 = <&avee_lcd_gpio>;
+    vin-supply = <&vcc_avdd>;
+  };
 
 	finger_power_test: finger-power-test {
 		compatible = "regulator-fixed";
