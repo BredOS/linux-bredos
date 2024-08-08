@@ -25,6 +25,7 @@
 		regulator-always-on;
 		regulator-state-mem {
 			regulator-off-in-suspend;
+      regulator-suspend-microvolt = <550000>;
 		};
 	};
 
@@ -42,6 +43,7 @@
 		regulator-always-on;
 		regulator-state-mem {
 			regulator-off-in-suspend;
+      regulator-suspend-microvolt = <550000>;
 		};
 	};
 };

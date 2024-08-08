@@ -68,10 +68,11 @@
 			248 249 250 251 252 253 254 255
 		>;
 		default-brightness-level = <200>;
+    post-pwm-on-delay-ms = <200>;
 	};
 
     hall_sensor: hall-mh248 {
-        compatible = "hall-mh248";
+        compatible = "hall-mh248-fyde";
         pinctrl-names = "default";
         pinctrl-0 = <&mh248_irq_gpio>;
         irq-gpio = <&gpio0 RK_PD3 IRQ_TYPE_EDGE_BOTH>;
@@ -215,10 +216,11 @@
 
     green_led: led-1 {
       color = <LED_COLOR_ID_GREEN>;
-      default-state = "off";
+      default-state = "on";
       gpios = <&gpio3 RK_PC2 GPIO_ACTIVE_HIGH>;
-      linux,default-trigger = "sbs-5-000b-full";
-      label = "power-full";
+      linux,default-trigger = "timer";
+      label = "power-on";
+      led-pattern = <500>, <1500>;
     };
 
   };
