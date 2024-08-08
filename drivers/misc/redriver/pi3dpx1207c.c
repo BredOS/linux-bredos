@@ -74,7 +74,7 @@ static int pi3dpx_notifier_call(struct notifier_block *nb,
     return NOTIFY_OK;
   priv->typec_state = val;
   priv->flip = *flip;
-  pr_info("typec state:%ul, flip:%d", priv->typec_state, priv->flip);
+  pr_info("typec state:%lu, flip:%d", priv->typec_state, priv->flip);
 	switch (priv->typec_state) {
 		case TYPEC_DP_STATE_E:
     case TYPEC_DP_STATE_C:
