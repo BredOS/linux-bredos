@@ -202,19 +202,19 @@ struct bq25700_device {
 	int				pd_charge_only;
 	unsigned int			bc_event;
 	bool				usb_bc;
-  bool        ready;
-  struct power_supply *battery;
-  struct delayed_work init_charger_current;
-  bool delay_charge_current;
-  u32 target_current;
-  u32 target_input_current;
-  u32 target_input_vol;
+	bool				ready;
+	struct power_supply *battery;
+	struct delayed_work init_charger_current;
+	bool delay_charge_current;
+	u32 target_current;
+	u32 target_input_current;
+	u32 target_input_vol;
 };
 
 struct bq25700_data {
-  const struct regmap_config *regmap_config;
-  const struct reg_field *reg_fields;
-  const int reg_fields_num;
+	const struct regmap_config *regmap_config;
+	const struct reg_field *reg_fields;
+	const int reg_fields_num;
 };
 
 static const struct reg_field bq25700_reg_fields[] = {
@@ -838,31 +838,31 @@ static int bq25703_dump_regs(struct bq25700_device *charger)
 	return 0;
 }
 
-  static void bq25700_delay_work_func(struct work_struct *work) {
-    int ret;
-    struct bq25700_state state;
-    struct bq25700_device *charger = container_of(work,
-                                             struct bq25700_device,
-                                             init_charger_current.work);
-    charger->delay_charge_current = false;
-    DBG("Enable charge, set charge current idx:%u, input_current:%u, input_vol:%u\n",
-        charger->target_current, charger->target_input_current, charger->target_input_vol);
-    ret = bq25700_field_write(charger, MAX_CHARGE_VOLTAGE, charger->init_data.max_chg_vol);
-    if (ret < 0) {
-      DBG("failed to set charge voltage, ret:%d\n",ret);
-    }
-    bq25700_field_write(charger, INPUT_CURRENT, charger->target_input_current);
-    bq25700_field_write(charger, INPUT_VOLTAGE, charger->target_input_vol);
-    ret = bq25700_field_write(charger, CHARGE_CURRENT, charger->target_current);
-    if (ret <0) {
-      DBG("failed to set current, ret:%d\n",ret);
-    }
-    bq25700_get_chip_state(charger, &state);
-    charger->state = state;
-    power_supply_changed(charger->supply_charger);
-    if (bq25700_field_read(charger, AC_STAT))
-        bq25700_notify_battery(charger);
-  }
+static void bq25700_delay_work_func(struct work_struct *work) {
+	int ret;
+	struct bq25700_state state;
+	struct bq25700_device *charger = container_of(work,
+											 struct bq25700_device,
+											 init_charger_current.work);
+	charger->delay_charge_current = false;
+	DBG("Enable charge, set charge current idx:%u, input_current:%u, input_vol:%u\n",
+		charger->target_current, charger->target_input_current, charger->target_input_vol);
+	ret = bq25700_field_write(charger, MAX_CHARGE_VOLTAGE, charger->init_data.max_chg_vol);
+	if (ret < 0) {
+		DBG("failed to set charge voltage, ret:%d\n",ret);
+	}
+	bq25700_field_write(charger, INPUT_CURRENT, charger->target_input_current);
+	bq25700_field_write(charger, INPUT_VOLTAGE, charger->target_input_vol);
+	ret = bq25700_field_write(charger, CHARGE_CURRENT, charger->target_current);
+	if (ret <0) {
+		DBG("failed to set current, ret:%d\n",ret);
+	}
+	bq25700_get_chip_state(charger, &state);
+	charger->state = state;
+	power_supply_changed(charger->supply_charger);
+	if (bq25700_field_read(charger, AC_STAT))
+		bq25700_notify_battery(charger);
+}
 
 static ssize_t bq25700_charge_info_show(struct device *dev,
 				 struct device_attribute *attr, char *buf)
@@ -922,17 +922,17 @@ void bq25700_charger_set_current(unsigned long event,
 	switch (event) {
 	case CHARGER_CURRENT_EVENT:
 		idx = bq25700_find_idx(current_value, TBL_ICHG);
-    if (bq25700_charger->delay_charge_current)
-      bq25700_charger->target_current = idx;
-    else
+	if (bq25700_charger->delay_charge_current)
+		bq25700_charger->target_current = idx;
+	else
 		  bq25700_field_write(bq25700_charger, CHARGE_CURRENT, idx);
 		break;
 
 	case INPUT_CURRENT_EVENT:
 		idx = bq25700_find_idx(current_value, TBL_INPUTCUR);
-    if (bq25700_charger->delay_charge_current)
-      bq25700_charger->target_input_current = idx;
-    else
+	if (bq25700_charger->delay_charge_current)
+		bq25700_charger->target_input_current = idx;
+	else
 		  bq25700_field_write(bq25700_charger, INPUT_CURRENT, idx);
 		break;
 
@@ -1043,25 +1043,25 @@ static int bq25700_hw_init(struct bq25700_device *charger)
 		enum bq25700_fields id;
 		u32 value;
 	} init_data[] = {
-    {CHARGE_CURRENT,   charger->init_data.ichg},
-    {MAX_CHARGE_VOLTAGE,   charger->init_data.max_chg_vol},
+		{CHARGE_CURRENT,	charger->init_data.ichg},
+		{MAX_CHARGE_VOLTAGE,	charger->init_data.max_chg_vol},
 		{MIN_SYS_VOTAGE,	 charger->init_data.sys_min_voltage},
 		{OTG_VOLTAGE,	 charger->init_data.otg_voltage},
 		{OTG_CURRENT,	 charger->init_data.otg_current},
 	};
-  ret = charger->battery->desc->get_property(charger->battery,
-                                             POWER_SUPPLY_PROP_CAPACITY,
-                                             &capacity);
-  dev_info(charger->dev, "Battery capacity:%d, ret:%d\n", capacity.intval, ret);
-  if (charger->delay_charge_current) {
-    init_data[0].value = 0;
-    init_data[1].value = 0;
-    if (ret < 0 || capacity.intval < 5)
-      delay = msecs_to_jiffies(DELAY_TIME);
-    else
-      delay = msecs_to_jiffies(SHORT_DELAY_TIME);
-    schedule_delayed_work(&charger->init_charger_current, delay);
-  }
+	ret = charger->battery->desc->get_property(charger->battery,
+												POWER_SUPPLY_PROP_CAPACITY,
+												&capacity);
+	dev_info(charger->dev, "Battery capacity:%d, ret:%d\n", capacity.intval, ret);
+	if (charger->delay_charge_current) {
+		init_data[0].value = 0;
+		init_data[1].value = 0;
+	if (ret < 0 || capacity.intval < 5)
+		delay = msecs_to_jiffies(DELAY_TIME);
+	else
+		delay = msecs_to_jiffies(SHORT_DELAY_TIME);
+		schedule_delayed_work(&charger->init_charger_current, delay);
+	}
 	/* disable watchdog */
 	ret = bq25700_field_write(charger, WDTWR_ADJ, 0);
 	if (ret < 0)
@@ -1179,11 +1179,11 @@ static int bq25700_fw_probe(struct bq25700_device *charger)
 static void bq25700_enable_charger(struct bq25700_device *charger,
 				   u32 input_current)
 {
-  if (charger->delay_charge_current) {
-    charger->target_current = charger->init_data.ichg;
-    charger->target_input_current = input_current;
-    return;
-  }
+	if (charger->delay_charge_current) {
+		charger->target_current = charger->init_data.ichg;
+	charger->target_input_current = input_current;
+	return;
+	}
 	bq25700_field_write(charger, INPUT_CURRENT, input_current);
 	bq25700_field_write(charger, CHARGE_CURRENT, charger->init_data.ichg);
 }
@@ -1314,8 +1314,8 @@ static int bq25700_power_supply_init(struct bq25700_device *charger)
 {
 	struct power_supply_config psy_cfg = { .drv_data = charger, };
 
- 	psy_cfg.supplied_to = bq25700_charger_supplied_to;
-  psy_cfg.num_supplicants = ARRAY_SIZE(bq25700_charger_supplied_to);
+	psy_cfg.supplied_to = bq25700_charger_supplied_to;
+	psy_cfg.num_supplicants = ARRAY_SIZE(bq25700_charger_supplied_to);
 	psy_cfg.of_node = charger->dev->of_node;
 
 	charger->supply_charger =
@@ -1359,7 +1359,7 @@ static int bq2570x_pd_notifier_call(struct notifier_block *nb,
 	if (prop.intval == 0) {
 		queue_delayed_work(bq->usb_charger_wq, &bq->discnt_work,
 				   msecs_to_jiffies(10));
-    bq25700_notify_battery(bq);
+	bq25700_notify_battery(bq);
 		return NOTIFY_OK;
 	}
 
@@ -1379,15 +1379,15 @@ static int bq2570x_pd_notifier_call(struct notifier_block *nb,
 			return NOTIFY_OK;
 		chr_idx = bq25700_find_idx(prop.intval, TBL_ICHG);
 
-  	if (bq->delay_charge_current) {
-      DBG("delay charge,cur:%d\n", chr_idx);
-  		bq->target_current = chr_idx;
-      bq->target_input_current = cur_idx;
-      bq->target_input_vol = vol_idx;
-    } else {
+	if (bq->delay_charge_current) {
+		DBG("delay charge,cur:%d\n", chr_idx);
+		bq->target_current = chr_idx;
+		bq->target_input_current = cur_idx;
+		bq->target_input_vol = vol_idx;
+	} else {
 		  bq25700_field_write(bq, INPUT_CURRENT, cur_idx);
 		  bq25700_field_write(bq, INPUT_VOLTAGE, vol_idx);
-      bq25700_field_write(bq, CHARGE_CURRENT, chr_idx);
+		  bq25700_field_write(bq, CHARGE_CURRENT, chr_idx);
     }
 		dev_info(bq->dev, "INPUT_CURRENT:%d, INPUT_VOLTAGE:%d, CHARGE_CURRENT:%d\n",
 			 cur_idx, vol_idx, chr_idx);
@@ -1395,8 +1395,8 @@ static int bq2570x_pd_notifier_call(struct notifier_block *nb,
 		bq25700_get_chip_state(bq, &state);
 		bq->state = state;
 		power_supply_changed(bq->supply_charger);
-    if (bq25700_field_read(bq, AC_STAT))
-      bq25700_notify_battery(bq);
+	if (bq25700_field_read(bq, AC_STAT))
+		bq25700_notify_battery(bq);
 	}
 	return NOTIFY_OK;
 }
@@ -1592,15 +1592,15 @@ static int bq25700_charger_evt_notifier1(struct notifier_block *nb,
 
 static void bq25700_set_otg_vbus(struct bq25700_device *charger, bool enable)
 {
-  u32 value;
+	u32 value;
 	DBG("OTG %s\n", enable ? "enable" : "disable");
-  value = enable ? charger->init_data.otg_voltage :
-                   bq25700_find_idx(MIN_OTGVOLTAGE, TBL_OTGVOL);
+	value = enable ? charger->init_data.otg_voltage :
+					bq25700_find_idx(MIN_OTGVOLTAGE, TBL_OTGVOL);
 	if (!IS_ERR_OR_NULL(charger->otg_mode_en_io))
 		gpiod_direction_output(charger->otg_mode_en_io, enable);
-  bq25700_field_write(charger,OTG_VOLTAGE,value);
-  bq25700_field_write(charger, EN_OTG, enable);
-  bq25700_notify_battery(charger);
+	bq25700_field_write(charger,OTG_VOLTAGE,value);
+	bq25700_field_write(charger, EN_OTG, enable);
+	bq25700_notify_battery(charger);
 }
 
 static void bq25700_host_evt_worker(struct work_struct *work)
@@ -1809,14 +1809,14 @@ static int bq25700_register_pd_nb(struct bq25700_device *charger)
 
 		cur_idx = bq25700_find_idx(prop.intval, TBL_INPUTCUR);
 		vol_idx = bq25700_find_idx((prop.intval - 1280000 - 3200000), TBL_INPUTVOL);
-    if (charger->delay_charge_current) {
-      charger->target_current = charger->init_data.ichg;
-      charger->target_input_current = cur_idx;
-      charger->target_input_vol = vol_idx;
-      DBG("delay charge, input_current:%d, input_voltage:%d, charge_current:%d\n",
-        cur_idx, vol_idx, charger->init_data.ichg);
-      return 0;
-    }
+	if (charger->delay_charge_current) {
+		charger->target_current = charger->init_data.ichg;
+		charger->target_input_current = cur_idx;
+		charger->target_input_vol = vol_idx;
+		DBG("delay charge, input_current:%d, input_voltage:%d, charge_current:%d\n",
+		cur_idx, vol_idx, charger->init_data.ichg);
+		return 0;
+	}
 		bq25700_field_write(charger, INPUT_CURRENT, cur_idx);
 		bq25700_field_write(charger, INPUT_VOLTAGE, vol_idx);
 		bq25700_field_write(charger, CHARGE_CURRENT,
@@ -2121,9 +2121,9 @@ static int bq25700_register(struct i2c_client *client,
 	 * Make sure battery online, otherwise, writing INPUT_CURRENT and
 	 * CHARGE_CURRENT would make system power off
 	 */
-  charger->battery = power_supply_get_by_phandle(
-                  dev->of_node,
-                  "ti,battery");
+	charger->battery = power_supply_get_by_phandle(
+				  dev->of_node,
+				  "ti,battery");
 	if (IS_ERR_OR_NULL(charger->battery)) {
 		dev_warn(charger->dev, "No battery found\n");
 		if (probe_cnt > 3) {
@@ -2177,8 +2177,8 @@ static void bq25700_shutdown(struct i2c_client *client)
 {
 	int vol_idx;
 	struct bq25700_device *charger = i2c_get_clientdata(client);
-  if (charger->delay_charge_current)
-    cancel_delayed_work(&charger->init_charger_current);
+	if (charger->delay_charge_current)
+		cancel_delayed_work(&charger->init_charger_current);
 
 	vol_idx = bq25700_find_idx(DEFAULT_INPUTVOL, TBL_INPUTVOL);
 	bq25700_field_write(charger, INPUT_VOLTAGE, vol_idx);
@@ -2219,15 +2219,15 @@ static const struct i2c_device_id bq25700_i2c_ids[] = {
 MODULE_DEVICE_TABLE(i2c, bq25700_i2c_ids);
 
 static const struct bq25700_data bq25700_driver_data = {
-  .regmap_config = &bq25700_regmap_config,
-  .reg_fields = bq25700_reg_fields,
-  .reg_fields_num = ARRAY_SIZE(bq25700_reg_fields),
+	.regmap_config = &bq25700_regmap_config,
+	.reg_fields = bq25700_reg_fields,
+	.reg_fields_num = ARRAY_SIZE(bq25700_reg_fields),
 };
 
 static const struct bq25700_data bq25703_driver_data = {
-  .regmap_config = &bq25703_regmap_config,
-  .reg_fields = bq25703_reg_fields,
-  .reg_fields_num = ARRAY_SIZE(bq25703_reg_fields),
+	.regmap_config = &bq25703_regmap_config,
+	.reg_fields = bq25703_reg_fields,
+	.reg_fields_num = ARRAY_SIZE(bq25703_reg_fields),
 };
 
 #ifdef CONFIG_OF
@@ -2246,12 +2246,12 @@ static const struct of_device_id bq25700_of_match[] = {
 #endif
 
 static int bq25700_probe(struct i2c_client *client,
-       const struct i2c_device_id *id) {
-  const struct bq25700_data *bq25700_data;
-  const struct of_device_id *match;
-  match = of_match_node(bq25700_of_match, client->dev.of_node);
-  bq25700_data = match->data;
-  return bq25700_register(client, bq25700_data);
+		const struct i2c_device_id *id) {
+	const struct bq25700_data *bq25700_data;
+	const struct of_device_id *match;
+	match = of_match_node(bq25700_of_match, client->dev.of_node);
+	bq25700_data = match->data;
+	return bq25700_register(client, bq25700_data);
 }
 
 static struct i2c_driver bq25700_driver = {

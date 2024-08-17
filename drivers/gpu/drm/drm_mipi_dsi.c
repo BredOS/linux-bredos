@@ -981,18 +981,18 @@ EXPORT_SYMBOL(mipi_dsi_dcs_get_pixel_format);
 
 int mipi_dsi_dcs_get_dsc_mode(struct mipi_dsi_device *dsi, u8 *mode)
 {
-  ssize_t err;
+	ssize_t err;
 
-  err = mipi_dsi_dcs_read(dsi, MIPI_DCS_GET_COMPRESSION_MODE, mode,
-          +       sizeof(*mode));
-  if (err <= 0) {
-    if (err == 0)
-      err = -ENODATA;
+	err = mipi_dsi_dcs_read(dsi, MIPI_DCS_GET_COMPRESSION_MODE, mode,
+							+ sizeof(*mode));
+	if (err <= 0) {
+		if (err == 0)
+			err = -ENODATA;
 
-    return err;
-  }
+		return err;
+	}
 
-  return 0;
+	return 0;
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_get_dsc_mode);
 

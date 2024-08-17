@@ -95,7 +95,7 @@ static int hall_mh248_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 	mh248->hall_input->name = "Lid Switch";
-  mh248->hall_input->phys = "button/input0";
+	mh248->hall_input->phys = "button/input0";
 	input_set_capability(mh248->hall_input, EV_SW, SW_LID);
 
 	ret = input_register_device(mh248->hall_input);

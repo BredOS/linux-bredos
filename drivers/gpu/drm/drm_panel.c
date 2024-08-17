@@ -61,7 +61,7 @@ void drm_panel_init(struct drm_panel *panel, struct device *dev,
 	panel->dev = dev;
 	panel->funcs = funcs;
 	panel->connector_type = connector_type;
-  BLOCKING_INIT_NOTIFIER_HEAD(&panel->nh);
+	BLOCKING_INIT_NOTIFIER_HEAD(&panel->nh);
 }
 EXPORT_SYMBOL(drm_panel_init);
 
@@ -152,8 +152,8 @@ EXPORT_SYMBOL(drm_panel_unprepare);
 int drm_panel_enable(struct drm_panel *panel)
 {
 	int ret;
-  int state = DRM_PANEL_BLANK_UNBLANK;
-  struct drm_panel_notifier dpn = {
+	int state = DRM_PANEL_BLANK_UNBLANK;
+	struct drm_panel_notifier dpn = {
 		.data = &state,
   };
 
@@ -171,8 +171,8 @@ int drm_panel_enable(struct drm_panel *panel)
 		DRM_DEV_INFO(panel->dev, "failed to enable backlight: %d\n",
 			     ret);
 
-  ret = drm_panel_notifier_call_chain(panel, DRM_PANEL_EVENT_BLANK, &dpn);
-  if (ret < 0)
+	ret = drm_panel_notifier_call_chain(panel, DRM_PANEL_EVENT_BLANK, &dpn);
+	if (ret < 0)
 		DRM_DEV_INFO(panel->dev, "failed to notifier call chain panel enable: %d\n", ret);
 	return 0;
 }
@@ -191,15 +191,15 @@ EXPORT_SYMBOL(drm_panel_enable);
 int drm_panel_disable(struct drm_panel *panel)
 {
 	int ret;
-  int state = DRM_PANEL_BLANK_POWERDOWN;
+	int state = DRM_PANEL_BLANK_POWERDOWN;
 	struct drm_panel_notifier dpn = {
 		.data = &state,
-  };
+	};
 
 	if (!panel)
 		return -EINVAL;
 
-  ret = drm_panel_notifier_call_chain(panel, DRM_PANEL_EARLY_EVENT_BLANK, &dpn);
+	ret = drm_panel_notifier_call_chain(panel, DRM_PANEL_EARLY_EVENT_BLANK, &dpn);
 	if (ret < 0)
 		DRM_DEV_INFO(panel->dev, "failed to notifier call chain panel disable: %d\n", ret);
 
