@@ -1056,10 +1056,10 @@ static int bq25700_hw_init(struct bq25700_device *charger)
 	if (charger->delay_charge_current) {
 		init_data[0].value = 0;
 		init_data[1].value = 0;
-	if (ret < 0 || capacity.intval < 5)
-		delay = msecs_to_jiffies(DELAY_TIME);
-	else
-		delay = msecs_to_jiffies(SHORT_DELAY_TIME);
+		if (ret < 0 || capacity.intval < 5)
+			delay = msecs_to_jiffies(DELAY_TIME);
+		else
+			delay = msecs_to_jiffies(SHORT_DELAY_TIME);
 		schedule_delayed_work(&charger->init_charger_current, delay);
 	}
 	/* disable watchdog */
