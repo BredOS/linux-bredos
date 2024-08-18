@@ -446,18 +446,19 @@
 };
 
 &sdmmc {
-  max-frequency = <150000000>;
-  no-sdio;
-  no-mmc;
-  bus-width = <4>;
-  cap-sd-highspeed;
-  cap-mmc-highspeed;
- // clock-frequency = <100000000>;
-  disable-wp;
- // sd-uhs-sdr104;
-  cd-gpios = <&gpio0 RK_PA4 0>;
-  card-detect-delay = <800>;
-  vmmc-supply = <&vcc_3v3_sd_s0>;
+	max-frequency = <150000000>;
+	no-sdio;
+	no-mmc;
+	bus-width = <4>;
+	cap-sd-highspeed;
+	cap-mmc-highspeed;
+	// clock-frequency = <100000000>;
+	disable-wp;
+	broken-cd;
+	// sd-uhs-sdr104;
+	cd-gpios = <&gpio0 RK_PA4 0>;
+	card-detect-delay = <800>;
+	vmmc-supply = <&vcc_3v3_sd_s0>;
 	status = "okay";
 };
 
