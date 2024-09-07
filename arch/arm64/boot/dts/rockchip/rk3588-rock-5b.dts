@@ -523,17 +523,22 @@
 
 &soc_thermal {
     sustainable-power = <5000>; /* milliwatts */
-	polling-delay = <1000>;
-	polling-delay-passive = <2000>;
+	polling-delay = <20000>;
+	polling-delay-passive = <10000>;
 	trips {
 		trip0: trip-point@0 {
-			temperature = <60000>;
-			hysteresis = <5000>;
-			type = "active";
+			temperature = <40000>;
+			hysteresis = <4000>;
+			type = "passive";
 		};
 		trip1: trip-point@1 {
+			temperature = <60000>;
+			hysteresis = <12000>;
+			type = "active";
+		};
+		trip2: trip-point@2 {
 			temperature = <67000>;
-			hysteresis = <5000>;
+			hysteresis = <12000>;
 			type = "active";
 		};
 		pcritical: trip-point@2 {
@@ -554,8 +559,13 @@
 			contribution = <1024>;
 		};
 		map2 {
-			trip = <&pcritical>;
+			trip = <&trip2>;
 			cooling-device = <&fan0 2 3>;
+			contribution = <1024>;
+		};
+		map3 {
+			trip = <&pcritical>;
+			cooling-device = <&fan0 3 4>;
 			contribution = <1024>;
 		};
 	};
