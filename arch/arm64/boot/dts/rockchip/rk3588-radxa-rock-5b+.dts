@@ -29,7 +29,7 @@
 	fan0: pwm-fan {
 		compatible = "pwm-fan";
 		#cooling-cells = <2>;
-		cooling-levels = <0 74 136 170 255>;
+		cooling-levels = <82 136 170 255>;
 		pwms = <&pwm1 0 10000 0>;
 	};
 
@@ -939,26 +939,21 @@
 &soc_thermal {
     sustainable-power = <5000>; /* milliwatts */
 	polling-delay = <20000>;
-	polling-delay-passive = <10000>;
+	polling-delay-passive = <20000>;
 	trips {
 		trip0: trip-point@0 {
-			temperature = <40000>;
-			hysteresis = <4000>;
-			type = "passive";
+			temperature = <65000>;
+			hysteresis = <15000>;
+			type = "active";
 		};
 		trip1: trip-point@1 {
-			temperature = <60000>;
-			hysteresis = <12000>;
+			temperature = <72000>;
+			hysteresis = <2000>;
 			type = "active";
 		};
-		trip2: trip-point@2 {
-			temperature = <67000>;
-			hysteresis = <12000>;
-			type = "active";
-		};
-		pcritical: trip-point@3 {
+		pcritical: trip-point@2 {
 			temperature = <80000>;
-			hysteresis = <20000>;
+			hysteresis = <1000>;
 			type = "active";
 		};
 	};
@@ -974,13 +969,8 @@
 			contribution = <1024>;
 		};
 		map2 {
-			trip = <&trip2>;
-			cooling-device = <&fan0 2 3>;
-			contribution = <1024>;
-		};
-		map3 {
 			trip = <&pcritical>;
-			cooling-device = <&fan0 3 4>;
+			cooling-device = <&fan0 2 3>;
 			contribution = <1024>;
 		};
 	};
