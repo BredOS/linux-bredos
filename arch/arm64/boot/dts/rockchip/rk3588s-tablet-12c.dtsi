@@ -219,9 +219,8 @@
       color = <LED_COLOR_ID_GREEN>;
       default-state = "on";
       gpios = <&gpio3 RK_PC2 GPIO_ACTIVE_HIGH>;
-      linux,default-trigger = "timer";
+      linux,default-trigger = "default-on";
       label = "power-on";
-      led-pattern = <500>, <1500>;
     };
 
   };
