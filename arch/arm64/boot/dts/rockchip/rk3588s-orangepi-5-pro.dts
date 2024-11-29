@@ -247,14 +247,14 @@
 		blue_led@1 {
 			gpios = <&gpio1 RK_PC6 GPIO_ACTIVE_HIGH>;
 			label = "blue_led";
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "default-on";
 			linux,default-trigger-delay-ms = <0>;
 		};
 
 		green_led@2 {
 			gpios = <&gpio1 RK_PC2 GPIO_ACTIVE_HIGH>;
 			label = "green_led";
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "default-on";
 			linux,default-trigger-delay-ms = <0>;
 		};
 	};
@@ -263,7 +263,7 @@
 		compatible = "pwm-fan";
 		#cooling-cells = <2>;
 		pwms = <&pwm2 0 50000 0>;
-		cooling-levels = <0 50 100 150 200 255>;
+		cooling-levels = <82 136 170 255>;
 		rockchip,temp-trips = <
 			50000   1
 			55000   2
@@ -283,6 +283,46 @@
 		rockchip,cpu = <&spdif_tx2>;
 		rockchip,codec = <&dp0 1>;
 		rockchip,jack-det;
+	};
+};
+
+&soc_thermal {
+    sustainable-power = <5000>; /* milliwatts */
+	polling-delay = <20000>;
+	polling-delay-passive = <20000>;
+	trips {
+		trip0: trip-point@0 {
+			temperature = <65000>;
+			hysteresis = <15000>;
+			type = "active";
+		};
+		trip1: trip-point@1 {
+			temperature = <72000>;
+			hysteresis = <2000>;
+			type = "active";
+		};
+		pcritical: trip-point@2 {
+			temperature = <80000>;
+			hysteresis = <1000>;
+			type = "active";
+		};
+	};
+	cooling-maps {
+		map0 {
+			trip = <&trip0>;
+			cooling-device = <&fan 0 1>;
+			contribution = <1024>;
+		};
+		map1 {
+			trip = <&trip1>;
+			cooling-device = <&fan 1 2>;
+			contribution = <1024>;
+		};
+		map2 {
+			trip = <&pcritical>;
+			cooling-device = <&fan 2 3>;
+			contribution = <1024>;
+		};
 	};
 };
 

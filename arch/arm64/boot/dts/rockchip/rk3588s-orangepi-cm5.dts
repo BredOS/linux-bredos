@@ -162,20 +162,11 @@
 			wakeup-source;
 		};
 	};
-
 	fan: pwm-fan {
 		compatible = "pwm-fan";
 		#cooling-cells = <2>;
-		pwms = <&pwm13 0 20000000 0>;
-		cooling-levels = <0 50 100 150 200 255>;
-		rockchip,temp-trips = <
-			50000   1
-			55000   2
-			60000   3
-			65000   4
-			70000   5
-		>;
-
+		cooling-levels = <82 136 170 255>;
+		pwms = <&pwm1 0 10000 0>;
 		status = "okay";
 	};
 
@@ -184,6 +175,46 @@
 		clock-frequency = <25000000>;
 		clock-output-names = "ext_cam_ov5647_clk";
 		#clock-cells = <0>;
+	};
+};
+
+&soc_thermal {
+    sustainable-power = <5000>; /* milliwatts */
+	polling-delay = <20000>;
+	polling-delay-passive = <20000>;
+	trips {
+		trip0: trip-point@0 {
+			temperature = <65000>;
+			hysteresis = <15000>;
+			type = "active";
+		};
+		trip1: trip-point@1 {
+			temperature = <72000>;
+			hysteresis = <2000>;
+			type = "active";
+		};
+		pcritical: trip-point@2 {
+			temperature = <80000>;
+			hysteresis = <1000>;
+			type = "active";
+		};
+	};
+	cooling-maps {
+		map0 {
+			trip = <&trip0>;
+			cooling-device = <&fan 0 1>;
+			contribution = <1024>;
+		};
+		map1 {
+			trip = <&trip1>;
+			cooling-device = <&fan 1 2>;
+			contribution = <1024>;
+		};
+		map2 {
+			trip = <&pcritical>;
+			cooling-device = <&fan 2 3>;
+			contribution = <1024>;
+		};
 	};
 };
 
@@ -712,7 +743,7 @@
 	             &gmac1_rx_bus2
 	             &gmac1_rgmii_clk
 	             &gmac1_rgmii_bus>;
-	
+
 	tx_delay = <0x42>;
 	/* rx_delay = <0x3f>; */
 
