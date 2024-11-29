@@ -14,7 +14,6 @@
 #include <dt-bindings/display/rockchip_vop.h>
 #include <dt-bindings/sensor-dev.h>
 #include "dt-bindings/usb/pd.h"
-
 #include "rk3588.dtsi"
 #include "rk3588-rk806-single.dtsi"
 #include "rk3588-linux.dtsi"
@@ -388,7 +387,6 @@
 		wifi_chip_type = "ap6611";
 		pinctrl-names = "default";
 		pinctrl-0 = <&wifi_host_wake_irq>;
-		WIFI,host_wake_irq = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
 		WIFI,poweren_gpio = <&gpio2 RK_PC5 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 	};
@@ -417,22 +415,54 @@
 	fan: pwm-fan {
 		compatible = "pwm-fan";
 		#cooling-cells = <2>;
-		pwms = <&pwm9 0 50000 0>;
-		cooling-levels = <0 50 100 150 200 255>;
-		rockchip,temp-trips = <
-			50000   1
-			55000   2
-			60000   3
-			65000   4
-			70000   5
-		>;
-
+		cooling-levels = <82 136 170 255>;
+        pwms = <&pwm1 0 10000 0>;
 		status = "okay";
 	};
 };
 
 &av1d {
 	status = "okay";
+};
+
+&soc_thermal {
+    sustainable-power = <5000>; /* milliwatts */
+	polling-delay = <20000>;
+	polling-delay-passive = <20000>;
+	trips {
+		trip0: trip-point@0 {
+			temperature = <65000>;
+			hysteresis = <15000>;
+			type = "active";
+		};
+		trip1: trip-point@1 {
+			temperature = <72000>;
+			hysteresis = <2000>;
+			type = "active";
+		};
+		pcritical: trip-point@2 {
+			temperature = <80000>;
+			hysteresis = <1000>;
+			type = "active";
+		};
+	};
+	cooling-maps {
+		map0 {
+			trip = <&trip0>;
+			cooling-device = <&fan 0 1>;
+			contribution = <1024>;
+		};
+		map1 {
+			trip = <&trip1>;
+			cooling-device = <&fan 1 2>;
+			contribution = <1024>;
+		};
+		map2 {
+			trip = <&pcritical>;
+			cooling-device = <&fan 2 3>;
+			contribution = <1024>;
+		};
+	};
 };
 
 &av1d_mmu {
