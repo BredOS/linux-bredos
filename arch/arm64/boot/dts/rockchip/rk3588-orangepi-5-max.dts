@@ -400,14 +400,14 @@
 		blue_led@1 {
 			gpios = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
 			label = "blue_led";
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "default-on";
 			linux,default-trigger-delay-ms = <0>;
 		};
 
 		green_led@2 {
 			gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
 			label = "green_led";
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "default-on";
 			linux,default-trigger-delay-ms = <0>;
 		};
 	};
