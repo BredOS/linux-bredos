@@ -387,6 +387,7 @@
 		wifi_chip_type = "ap6611";
 		pinctrl-names = "default";
 		pinctrl-0 = <&wifi_host_wake_irq>;
+		WIFI,host_wake_irq = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
 		WIFI,poweren_gpio = <&gpio2 RK_PC5 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 	};
@@ -400,15 +401,15 @@
 		blue_led@1 {
 			gpios = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
 			label = "blue_led";
-			linux,default-trigger = "default-on";
-			linux,default-trigger-delay-ms = <0>;
+			linux,default-trigger = "panic";
+			default-state = "off";
 		};
 
 		green_led@2 {
 			gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
 			label = "green_led";
-			linux,default-trigger = "default-on";
-			linux,default-trigger-delay-ms = <0>;
+			linux,default-trigger = "r8169-3-3100:00:link";
+			default-state = "off";
 		};
 	};
 
