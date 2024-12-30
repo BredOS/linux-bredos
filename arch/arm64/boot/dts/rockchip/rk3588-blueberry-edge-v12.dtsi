@@ -76,7 +76,7 @@
 		compatible = "gpio-leds";
 		hdd_led: hdd-led {
 			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "activity";
+			linux,default-trigger = "panic";
 			default-state = "off";
 		};
 		wifi_led: wifi-led {
