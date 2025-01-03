@@ -123,14 +123,14 @@
 		pinctrl-0 =<&leds_gpio>;
 		status = "okay";
 
-		lan2_2 {
-			gpios = <&gpio0 RK_PC7 GPIO_ACTIVE_HIGH>;
+        lan2_2 {
+			gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_LOW>;
 		    linux,default-trigger = "r8169-4-4100:00:link";
 			default-state = "off";
 		};
 
-        lan2_1 {
-			gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_LOW>;
+		lan2_1 {
+			gpios = <&gpio0 RK_PC7 GPIO_ACTIVE_HIGH>;
 		    linux,default-trigger = "r8169-3-3100:00:link";
 			default-state = "off";
 		};
@@ -143,7 +143,7 @@
 
 		power {
 			gpios = <&gpio0 RK_PC4 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "default-on";
 			default-state = "on";
 		};
 	};
