@@ -233,8 +233,7 @@
 		compatible = "wlan-platdata";
 		wifi_chip_type = "ap6275p";
 		pinctrl-names = "default";
-		pinctrl-0 = <&wifi_host_wake_irq>, <&wifi_poweren_gpio>;
-		WIFI,host_wake_irq = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
+		pinctrl-0 = <&wifi_poweren_gpio>;
 		WIFI,poweren_gpio = <&gpio1 RK_PB1 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 	};
