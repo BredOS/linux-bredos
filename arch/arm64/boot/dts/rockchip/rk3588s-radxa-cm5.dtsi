@@ -34,7 +34,7 @@
 
 		status-led-blue {
 			gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "default-on";
 			default-state = "on";
 		};
 	};

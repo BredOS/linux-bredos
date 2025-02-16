@@ -92,8 +92,8 @@
 &gpio_leds {
 	activity-led-green {
 		gpios = <&gpio4 RK_PB3 GPIO_ACTIVE_LOW>;
-		linux,default-trigger = "heartbeat";
-		default-state = "on";
+		linux,default-trigger = "none";
+		default-state = "off";
 	};
 
 	pwr-led-red {
