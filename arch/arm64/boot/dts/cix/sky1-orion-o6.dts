@@ -824,7 +824,7 @@
 			/* I2S0_MCLK */
 			CIX_PAD_HDA_SDIN0_FUNC_I2S0_MCLK    	(PULL_DOWN|ST|DS_LEVEL12)
 			/* I2S0_DATA_OUT */
-		
+
 			CIX_PAD_HDA_SDOUT0_FUNC_I2S0_DATA_OUT 	(PULL_UP|ST|DS_LEVEL12)
 			/* I2S0_WS */
 			CIX_PAD_HDA_SYNC_FUNC_I2S0_WS 	    	(PULL_UP|ST|DS_LEVEL12)
@@ -2070,7 +2070,7 @@
 };
 
 &xspi {
-	status = "disabled";
+	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fch_xspi>;
 
