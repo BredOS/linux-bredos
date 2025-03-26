@@ -2080,6 +2080,17 @@
 		spi-rx-bus-width = <4>;
 		spi-max-frequency = <25000000>;
 	 };
+
+	partitions {
+        compatible = "fixed-partitions";
+        #address-cells = <1>;
+        #size-cells = <1>;
+
+        loader@0 {
+        	label = "loader";
+        	reg = <0x0 0x1000000>;
+        };
+    };
 };
 
 &uart0 {
