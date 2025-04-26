@@ -42,6 +42,7 @@ struct drm_panel;
 struct drm_property;
 struct drm_property_blob;
 struct drm_printer;
+struct drm_panel;
 struct drm_privacy_screen;
 struct edid;
 struct i2c_adapter;
@@ -1691,6 +1692,12 @@ struct drm_connector {
 
 	/** @hdr_sink_metadata: HDR Metadata Information read from sink */
 	struct hdr_sink_metadata hdr_sink_metadata;
+  /**
+  * @panel:
+  *
+  * Can find the panel which connected to drm_connector.
+  */
+  struct drm_panel *panel;
 };
 
 #define obj_to_connector(x) container_of(x, struct drm_connector, base)
