@@ -280,6 +280,7 @@ ssize_t mipi_dsi_dcs_read(struct mipi_dsi_device *dsi, u8 cmd, void *data,
 int mipi_dsi_dcs_nop(struct mipi_dsi_device *dsi);
 int mipi_dsi_dcs_soft_reset(struct mipi_dsi_device *dsi);
 int mipi_dsi_dcs_get_power_mode(struct mipi_dsi_device *dsi, u8 *mode);
+int mipi_dsi_dcs_get_dsc_mode(struct mipi_dsi_device *dsi, u8 *mode);
 int mipi_dsi_dcs_get_pixel_format(struct mipi_dsi_device *dsi, u8 *format);
 int mipi_dsi_dcs_enter_sleep_mode(struct mipi_dsi_device *dsi);
 int mipi_dsi_dcs_exit_sleep_mode(struct mipi_dsi_device *dsi);

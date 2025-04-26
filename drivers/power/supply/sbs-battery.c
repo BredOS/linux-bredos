@@ -858,7 +858,9 @@ static int sbs_get_chemistry(struct sbs_info *chip,
 	else if (!strncasecmp(chemistry, "NiCd", 4))
 		chip->technology = POWER_SUPPLY_TECHNOLOGY_NiCd;
 	else if (!strncasecmp(chemistry, "NiMH", 4))
-		chip->technology = POWER_SUPPLY_TECHNOLOGY_NiMH;
+		val->intval = POWER_SUPPLY_TECHNOLOGY_NiMH;
+	else if (!strncasecmp(chemistry, "3613", 4))
+		val->intval = POWER_SUPPLY_TECHNOLOGY_LION;
 	else
 		chip->technology = POWER_SUPPLY_TECHNOLOGY_UNKNOWN;
 

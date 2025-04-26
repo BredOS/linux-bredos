@@ -979,6 +979,23 @@ int mipi_dsi_dcs_get_pixel_format(struct mipi_dsi_device *dsi, u8 *format)
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_get_pixel_format);
 
+int mipi_dsi_dcs_get_dsc_mode(struct mipi_dsi_device *dsi, u8 *mode)
+{
+  ssize_t err;
+
+  err = mipi_dsi_dcs_read(dsi, MIPI_DCS_GET_COMPRESSION_MODE, mode,
+          +       sizeof(*mode));
+  if (err <= 0) {
+    if (err == 0)
+      err = -ENODATA;
+
+    return err;
+  }
+
+  return 0;
+}
+EXPORT_SYMBOL(mipi_dsi_dcs_get_dsc_mode);
+
 /**
  * mipi_dsi_dcs_enter_sleep_mode() - disable all unnecessary blocks inside the
  *    display module except interface communication

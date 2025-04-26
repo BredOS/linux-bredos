@@ -1,0 +1,562 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
+ *
+ */
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pwm/pwm.h>
+#include <dt-bindings/pinctrl/rockchip.h>
+#include <dt-bindings/input/rk-input.h>
+#include <dt-bindings/display/drm_mipi_dsi.h>
+#include <dt-bindings/display/rockchip_vop.h>
+#include <dt-bindings/sensor-dev.h>
+
+/ {
+	hdmi0_sound: hdmi0-sound {
+		status = "disabled";
+		compatible = "simple-audio-card";
+		simple-audio-card,format = "i2s";
+		simple-audio-card,mclk-fs = <128>;
+		simple-audio-card,name = "rockchip,hdmi0";
+
+		simple-audio-card,cpu {
+			sound-dai = <&i2s5_8ch>;
+		};
+		simple-audio-card,codec {
+			sound-dai = <&hdmi0>;
+		};
+	};
+/*
+    dp0_sound: dp0-sound {
+        compatible = "simple-audio-card";
+        simple-audio-card,name = "rockchip-dp-sound";
+
+        simple-audio-card,cpu {
+            sound-dai = <&spdif_tx2>;
+        };
+
+        simple-audio-card,codec {
+            sound-dai = <&dp0 1>;
+        };
+    };
+*/
+
+  dp0_sound: dp0-sound {
+      status = "disabled";
+      compatible = "rockchip,hdmi";
+      rockchip,card-name = "HDMI/DP-rockchip-0";
+      rockchip,mclk-fs = <512>;
+      rockchip,cpu = <&spdif_tx2>;
+      rockchip,codec = <&dp0 1>;
+      rockchip,jack-det;
+  };
+
+	spdif_tx1_dc: spdif-tx1-dc {
+		status = "disabled";
+		compatible = "linux,spdif-dit";
+		#sound-dai-cells = <0>;
+	};
+
+	spdif_tx1_sound: spdif-tx1-sound {
+		status = "disabled";
+		compatible = "simple-audio-card";
+		simple-audio-card,name = "rockchip,spdif-tx1";
+		simple-audio-card,cpu {
+			sound-dai = <&spdif_tx1>;
+		};
+		simple-audio-card,codec {
+			sound-dai = <&spdif_tx1_dc>;
+		};
+	};
+
+	test-power {
+		status = "disabled";
+	};
+
+	vbus_typec: vbus-typec {
+		compatible = "regulator-fixed";
+		regulator-name = "vbus_typec";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+	};
+
+	vcc_in: vcc-in {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc_in";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <12000000>;
+		regulator-max-microvolt = <12000000>;
+		vin-supply = <&vbus_typec>;
+	};
+
+	vcc_sysin: vcc-sysin {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc_sysin";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <4000000>;
+		regulator-max-microvolt = <4000000>;
+		vin-supply = <&vcc_in>;
+	};
+
+	vcc_5v0: vcc-5v0 {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc_5v0";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+		gpio = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vcc_5v0_en>;
+		vin-supply = <&vcc_in>;
+	};
+
+	headset_mic: headset-mic {
+		compatible = "regulator-fixed";
+		regulator-name = "headset_mic";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		enable-active-high;
+		gpio = <&gpio1 RK_PC1 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vcc_headset_mic>;
+	};
+
+	vcc_lcdbl_in: vcc-lcdbl-in {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc_lcdbl_in";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <12000000>;
+		regulator-max-microvolt = <12000000>;
+		vin-supply = <&vcc_in>;
+	};
+
+
+	vcc_1v1_nldo_s3: vcc-1v1-nldo-s3 {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc_1v1_nldo_s3";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <1100000>;
+		regulator-max-microvolt = <1100000>;
+		vin-supply = <&vcc_sysin>;
+	};
+
+	batt_in: batt-in {
+		compatible = "regulator-fixed";
+		regulator-name = "batt_in";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <1100000>;
+		regulator-max-microvolt = <1100000>;
+		gpio = <&gpio3 RK_PC4 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		pinctrl-names = "default";
+		pinctrl-0 = <&batt_in_en>;
+		vin-supply = <&vcc_sysin>;
+	};
+
+	cam_power: cam-power {
+		compatible = "regulator-fixed";
+		regulator-name = "cam_power";
+		regulator-always-on;
+		regulator-boot-on;
+		gpio = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		pinctrl-names = "default";
+		pinctrl-0 = <&cam_power_en>;
+	};
+
+	sdmmc_power: sdmmc-power {
+		compatible = "regulator-fixed";
+		regulator-name = "sdmmc_power";
+		regulator-boot-on;
+		enable-active-high;
+		gpio = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&sdmmc_power_en>;
+	};
+
+	vcc_lcd_en: vcc-lcd-en {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc_lcd_en";
+		regulator-boot-on;
+		enable-active-high;
+		gpio = <&gpio4 RK_PA3 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vcc_lcd_en_pin>;
+	};
+
+	finger_power_test: finger-power-test {
+		compatible = "regulator-fixed";
+		regulator-name = "finger_power";
+		regulator-always-on;
+		regulator-boot-on;
+		gpio = <&gpio1 RK_PB0 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		pinctrl-names = "default";
+		pinctrl-0 = <&finger_power_test_en>;
+	};
+
+	finger_rst_test: finger-rst-test {
+		compatible = "regulator-fixed";
+		regulator-name = "finger_rst";
+		regulator-always-on;
+		regulator-boot-on;
+		gpio = <&gpio3 RK_PB1 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		pinctrl-names = "default";
+		pinctrl-0 = <&finger_rst_test_en>;
+	};
+
+  pinctrl-user {
+	  12c-power {
+  		vcc_5v0_en: vcc_5v0_en {
+  			rockchip,pins = <4 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>;
+  		};
+  		cam_power_en: cam-power-en {
+  			rockchip,pins = <3 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
+  		};
+  		finger_power_test_en: finger-power-test-en {
+  			rockchip,pins = <1 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
+  		};
+  		finger_rst_test_en: finger-rst-test-en {
+  			rockchip,pins = <3 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
+  		};
+  		sdmmc_power_en: sdmmc-power-en {
+  			rockchip,pins = <4 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
+  		};
+  		vcc_headset_mic: vcc-headset-mic {
+  			rockchip,pins = <1 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
+  		};
+	  };
+  };
+};
+
+&combphy0_ps {
+	status = "okay";
+};
+
+&combphy2_psu {
+	status = "okay";
+};
+
+&cpu_l0 {
+	cpu-supply = <&vdd_cpu_lit_s0>;
+	mem-supply = <&vdd_cpu_lit_mem_s0>;
+};
+
+&cpu_b0 {
+	cpu-supply = <&vdd_cpu_big0_s0>;
+	mem-supply = <&vdd_cpu_big0_mem_s0>;
+};
+
+&cpu_b2 {
+	cpu-supply = <&vdd_cpu_big1_s0>;
+	mem-supply = <&vdd_cpu_big1_mem_s0>;
+};
+
+
+&gpu {
+	mali-supply = <&vdd_gpu_s0>;
+	mem-supply = <&vdd_gpu_mem_s0>;
+	status = "okay";
+};
+
+&i2s0_8ch {
+	status = "okay";
+	pinctrl-0 = <&i2s0_lrck
+		     &i2s0_sclk
+		     &i2s0_sdi0
+		     &i2s0_sdo0>;
+};
+
+&iep {
+	status = "okay";
+};
+
+&iep_mmu {
+	status = "okay";
+};
+
+&jpegd {
+	status = "okay";
+};
+
+&jpegd_mmu {
+	status = "okay";
+};
+
+&jpege_ccu {
+	status = "okay";
+};
+
+&jpege0 {
+	status = "okay";
+};
+
+&jpege0_mmu {
+	status = "okay";
+};
+
+&jpege1 {
+	status = "okay";
+};
+
+&jpege1_mmu {
+	status = "okay";
+};
+
+&jpege2 {
+	status = "okay";
+};
+
+&jpege2_mmu {
+	status = "okay";
+};
+
+&jpege3 {
+	status = "okay";
+};
+
+&jpege3_mmu {
+	status = "okay";
+};
+
+&mpp_srv {
+	status = "okay";
+};
+
+&rga3_core0 {
+	status = "okay";
+};
+
+&rga3_0_mmu {
+	status = "okay";
+};
+
+&rga3_core1 {
+	status = "okay";
+};
+
+&rga3_1_mmu {
+	status = "okay";
+};
+
+&rga2 {
+	status = "okay";
+};
+
+&rknpu {
+	rknpu-supply = <&vdd_npu_s0>;
+	mem-supply = <&vdd_npu_mem_s0>;
+	status = "okay";
+};
+
+&rknpu_mmu {
+	status = "okay";
+};
+
+&rkvdec_ccu {
+	status = "okay";
+};
+
+&rkvdec0 {
+	status = "okay";
+};
+
+&rkvdec0_mmu {
+	status = "okay";
+};
+
+&rkvdec1 {
+	status = "okay";
+};
+
+&rkvdec1_mmu {
+	status = "okay";
+};
+
+&rkvenc_ccu {
+	status = "okay";
+};
+
+&rkvenc0 {
+	status = "okay";
+};
+
+&rkvenc0_mmu {
+	status = "okay";
+};
+
+&rkvenc1 {
+	status = "okay";
+};
+
+&rkvenc1_mmu {
+	status = "okay";
+};
+
+&rockchip_suspend {
+	status = "okay";
+	rockchip,sleep-debug-en = <1>;
+};
+
+&saradc {
+        status = "okay";
+        vref-supply = <&vcc_1v8_s0>;
+};
+
+&sdhci {
+	bus-width = <8>;
+	no-sdio;
+	no-sd;
+	non-removable;
+	max-frequency = <200000000>;
+	mmc-hs400-1_8v;
+	mmc-hs400-enhanced-strobe;
+	status = "okay";
+};
+
+&sdmmc {
+	max-frequency = <150000000>;
+	no-sdio;
+	no-mmc;
+  /*broken-cd;*/
+	bus-width = <4>;
+	cap-mmc-highspeed;
+	cap-sd-highspeed;
+	disable-wp;
+	sd-uhs-sdr104;
+	pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_bus4>;
+	vmmc-supply = <&sdmmc_power>;
+	vqmmc-supply = <&vccio_sd_s0>;
+	status = "okay";
+};
+
+&tsadc {
+	status = "okay";
+};
+
+&u2phy0 {
+	status = "okay";
+};
+
+&u2phy2 {
+	status = "okay";
+};
+
+&u2phy3 {
+	status = "okay";
+};
+
+&u2phy0_otg {
+	status = "okay";
+};
+
+&u2phy2_host {
+	status = "okay";
+};
+
+&u2phy3_host {
+	status = "okay";
+};
+
+&usb_host0_ehci {
+	status = "okay";
+};
+
+&usb_host0_ohci {
+	status = "okay";
+};
+
+&usb_host1_ehci {
+	status = "okay";
+};
+
+&usb_host1_ohci {
+	status = "okay";
+};
+
+&usbdp_phy0 {
+	status = "okay";
+};
+
+&usbdp_phy0_dp {
+	status = "okay";
+};
+
+&usbdp_phy0_u3 {
+	status = "okay";
+};
+
+&usbdrd3_0 {
+	status = "okay";
+};
+
+&usbdrd_dwc3_0 {
+	dr_mode = "otg";
+	status = "okay";
+};
+
+&usbhost3_0 {
+	status = "okay";
+};
+
+&usbhost_dwc3_0 {
+	status = "okay";
+};
+
+&vdpu {
+	status = "okay";
+};
+
+&vdpu_mmu {
+	status = "okay";
+};
+
+&vop {
+  disable-win-move;
+	status = "okay";
+};
+
+&vop_mmu {
+	status = "okay";
+};
+
+&spdif_tx2 {
+	status = "okay";
+};
+
+&vp0 {
+  /delete-property/ rockchip,plane-mask;
+  /delete-property/ rockchip,primary-plane;
+};
+
+&vp1 {
+  cursor-win-id=<ROCKCHIP_VOP2_ESMART1>;
+  rockchip,plane-mask = <( 1 << ROCKCHIP_VOP2_CLUSTER0 | 1 << ROCKCHIP_VOP2_ESMART0 |
+        1 << ROCKCHIP_VOP2_CLUSTER1 | 1 << ROCKCHIP_VOP2_ESMART1)>;
+  rockchip,primary-plane = <ROCKCHIP_VOP2_CLUSTER1>;
+};
+
+&vp2 {
+  cursor-win-id=<ROCKCHIP_VOP2_ESMART2>;
+  rockchip,plane-mask = <( 1 << ROCKCHIP_VOP2_CLUSTER2 | 1 << ROCKCHIP_VOP2_ESMART2 |
+        1 << ROCKCHIP_VOP2_CLUSTER3 | 1 << ROCKCHIP_VOP2_ESMART3)>;
+  rockchip,primary-plane = <ROCKCHIP_VOP2_CLUSTER2>;
+};
+
+&vp3 {
+  /delete-property/ rockchip,plane-mask;
+  /delete-property/ rockchip,primary-plane;
+};

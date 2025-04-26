@@ -7,6 +7,12 @@ menu "Misc devices"
 
 source "drivers/misc/rk628/Kconfig"
 
+config JW_IO
+  tristate "JW IO INIT"
+  default n
+  help
+    jw io init
+
 config RK803
 	tristate "RK803"
 	default n
