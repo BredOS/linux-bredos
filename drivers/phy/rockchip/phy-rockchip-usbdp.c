@@ -405,6 +405,22 @@ static const struct reg_sequence udphy_init_sequence[] = {
 	{0x09C0, 0x0A}, {0x19C0, 0x0A}
 };
 
+ATOMIC_NOTIFIER_HEAD(redriver_notifier);
+EXPORT_SYMBOL_GPL(redriver_notifier);
+
+int redriver_reg_notifier(struct notifier_block *nb)
+{
+		return atomic_notifier_chain_register(&redriver_notifier, nb);
+}
+EXPORT_SYMBOL_GPL(redriver_reg_notifier);
+
+
+void redriver_unreg_notifier(struct notifier_block *nb)
+{
+		atomic_notifier_chain_unregister(&redriver_notifier, nb);
+}
+EXPORT_SYMBOL_GPL(redriver_unreg_notifier);
+
 static inline int grfreg_write(struct regmap *base,
 			       const struct udphy_grf_reg *reg, bool en)
 {
@@ -1400,6 +1416,10 @@ static int usbdp_typec_mux_set(struct typec_mux_dev *mux,
 {
 	struct rockchip_udphy *udphy = typec_mux_get_drvdata(mux);
 	u8 mode;
+	uint32_t _flip = udphy->flip? 1:0;
+ 
+	atomic_notifier_call_chain(&redriver_notifier,
+								state->mode, &_flip);
 
 	mutex_lock(&udphy->mutex);
 
