@@ -570,6 +570,7 @@ extern uint32_t g_hx_chip_inited;
 
 int himax_chip_common_suspend(struct himax_ts_data *ts);
 int himax_chip_common_resume(struct himax_ts_data *ts);
+void himax_chip_common_remove(struct i2c_client *client);
 
 extern struct filename* (*kp_getname_kernel)(const char *filename);
 extern void (*kp_putname_kernel)(struct filename *name);

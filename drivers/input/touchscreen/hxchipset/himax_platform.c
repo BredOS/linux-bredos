@@ -654,7 +654,7 @@ int himax_gpio_power_config(struct himax_platform_data *pdata)
 	/*msleep(20);*/
 	usleep_range(2000, 2001);
 #if defined(HX_RST_PIN_FUNC)
-f
+
 	if (gpio_is_valid(pdata->gpio_reset)) {
 		error = gpio_direction_output(pdata->gpio_reset, 1);
 
@@ -1229,14 +1229,12 @@ err_alloc_rw_buf_failed:
 	return ret;
 }
 
-int himax_chip_common_remove(struct i2c_client *client)
+void himax_chip_common_remove(struct i2c_client *client)
 {
 	if (g_hx_chip_inited)
 		himax_chip_common_deinit();
 
 	kfree(gp_rw_buf);
-
-	return 0;
 }
 
 static const struct i2c_device_id himax_common_ts_id[] = {
