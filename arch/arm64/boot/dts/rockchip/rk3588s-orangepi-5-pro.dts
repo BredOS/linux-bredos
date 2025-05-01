@@ -264,7 +264,6 @@
 		#cooling-cells = <2>;
         cooling-levels = <82 136 170 255>;
         pwms = <&pwm1 0 10000 0>;
-        status = "okay";
 		rockchip,temp-trips = <
 			50000   1
 			55000   2
