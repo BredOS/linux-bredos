@@ -25,6 +25,7 @@
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
+#include <linux/iopoll.h>
 #include <linux/media-bus-format.h>
 #include <linux/module.h>
 #include <linux/of_platform.h>
@@ -169,6 +170,7 @@ struct panel_desc {
 		unsigned int unprepare;
 		unsigned int reset;
 		unsigned int init;
+		unsigned int hpd_absent_delay;
 	} delay;
 
 	/** @bus_format: See MEDIA_BUS_FMT_... defines. */
