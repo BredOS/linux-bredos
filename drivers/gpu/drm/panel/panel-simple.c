@@ -25,7 +25,6 @@
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
-#include <linux/iopoll.h>
 #include <linux/media-bus-format.h>
 #include <linux/module.h>
 #include <linux/of_platform.h>
@@ -170,7 +169,6 @@ struct panel_desc {
 		unsigned int unprepare;
 		unsigned int reset;
 		unsigned int init;
-		unsigned int hpd_absent_delay;
 	} delay;
 
 	/** @bus_format: See MEDIA_BUS_FMT_... defines. */
@@ -205,8 +203,6 @@ struct panel_simple {
 
 	ktime_t prepared_time;
 	ktime_t unprepared_time;
-	bool reset_enable_combined;
-	bool no_hpd;
 
 	const struct panel_desc *desc;
 
@@ -215,7 +211,6 @@ struct panel_simple {
 
 	struct gpio_desc *enable_gpio;
 	struct gpio_desc *reset_gpio;
-	struct gpio_desc *hpd_gpio;
 
 	struct edid *edid;
 
@@ -584,11 +579,7 @@ static int panel_simple_unprepare(struct drm_panel *panel)
 		}
 	}
 
-	if (p->reset_enable_combined)
-		gpiod_direction_output(p->reset_gpio, 0);
-	else
-		gpiod_direction_output(p->reset_gpio, 1);
-
+	gpiod_direction_output(p->reset_gpio, 1);
 	gpiod_direction_output(p->enable_gpio, 0);
 
 	panel_simple_regulator_disable(p);
@@ -601,37 +592,10 @@ static int panel_simple_unprepare(struct drm_panel *panel)
 	return 0;
 }
 
-static int panel_simple_get_hpd_gpio(struct device *dev,
- 				     struct panel_simple *p, bool from_probe)
- {
- 	int err;
- 
- 	p->hpd_gpio = devm_gpiod_get_optional(dev, "hpd", GPIOD_IN);
- 	if (IS_ERR(p->hpd_gpio)) {
- 		err = PTR_ERR(p->hpd_gpio);
- 
- 		/*
- 		 * If we're called from probe we won't consider '-EPROBE_DEFER'
- 		 * to be an error--we'll leave the error code in "hpd_gpio".
- 		 * When we try to use it we'll try again.  This allows for
- 		 * circular dependencies where the component providing the
- 		 * hpd gpio needs the panel to init before probing.
- 		 */
- 		if (err != -EPROBE_DEFER || !from_probe) {
- 			dev_err(dev, "failed to get 'hpd' GPIO: %d\n", err);
- 			return err;
- 		}
- 	}
- 
- 	return 0;
- }
-
 static int panel_simple_prepare(struct drm_panel *panel)
 {
 	struct panel_simple *p = to_panel_simple(panel);
-	unsigned int delay;
 	int err;
-	int hpd_asserted;
 
 	/* Preparing when already prepared is a no-op */
 	if (p->prepared)
@@ -645,31 +609,8 @@ static int panel_simple_prepare(struct drm_panel *panel)
 
 	gpiod_direction_output(p->enable_gpio, 1);
 
-	delay = p->desc->delay.prepare;
- 	if (p->no_hpd)
- 		delay += p->desc->delay.hpd_absent_delay;
- 	if (delay)
- 		panel_simple_msleep(delay);
- 
- 	if (p->hpd_gpio) {
- 		if (IS_ERR(p->hpd_gpio)) {
- 			err = panel_simple_get_hpd_gpio(panel->dev, p, false);
- 			if (err)
- 				return err;
- 		}
- 
- 		err = readx_poll_timeout(gpiod_get_value_cansleep, p->hpd_gpio,
- 					 hpd_asserted, hpd_asserted,
- 					 1000, 2000000);
- 		if (hpd_asserted < 0)
- 			err = hpd_asserted;
- 
- 		if (err) {
- 			dev_err(panel->dev,
- 				"error waiting for hpd GPIO: %d\n", err);
- 			return err;
- 		}
- 	}
+	if (p->desc->delay.prepare)
+		panel_simple_msleep(p->desc->delay.prepare);
 
 	gpiod_direction_output(p->reset_gpio, 1);
 
@@ -936,15 +877,8 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 		return -ENOMEM;
 
 	panel->enabled = false;
-	panel->prepared = false;
+	panel->prepared_time = 0;
 	panel->desc = desc;
-
-	panel->no_hpd = of_property_read_bool(dev->of_node, "no-hpd");
-	if (!panel->no_hpd) {
-		err = panel_simple_get_hpd_gpio(dev, panel, true);
-		if (err)
-			return err;
-	}
 
 	panel->supply = devm_regulator_get(dev, "power");
 	if (IS_ERR(panel->supply)) {
@@ -975,7 +909,6 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 		return err;
 	}
 
-	panel->reset_enable_combined = of_property_read_bool(dev->of_node, "reset-enable-combined");
 	panel->power_invert = of_property_read_bool(dev->of_node, "power-invert");
 
 	ddc = of_parse_phandle(dev->of_node, "ddc-i2c-bus", 0);
