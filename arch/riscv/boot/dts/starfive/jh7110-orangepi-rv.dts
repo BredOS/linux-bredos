@@ -16,13 +16,13 @@
 
 	gpio-restart {
 		compatible = "gpio-restart";
-		gpios = <&gpio 35 GPIO_ACTIVE_HIGH>;
+		gpios = <&sysgpio 35 GPIO_ACTIVE_HIGH>;
 		priority = <160>;
 	};
 
 	aliases {
 		spi0 = &qspi;
-		gpio0 = &gpio;
+		gpio0 = &sysgpio;
 		ethernet0 = &gmac0;
 		ethernet1 = &gmac1;
 		mmc0 = &sdio0;
@@ -177,7 +177,7 @@
 	};
 };
 
-&gpio {
+&sysgpio {
 	i2c0_pins: i2c0-0 {
 		i2c-pins {
 			pinmux = <GPIOMUX(57, GPOUT_LOW,
@@ -392,17 +392,11 @@
 	status = "okay";
 };
 
-&trng {
-	status = "okay";
-};
 
 &crypto {
 	status = "okay";
 };
 
-&sec_dma {
-	status = "okay";
-};
 
 &i2c0 {
 	clock-frequency = <100000>;
@@ -983,7 +977,7 @@
 	memory-region = <&hifi4_reserved>;
 };
 
-&gpio {
+&sysgpio {
 	uart0_pins: uart0-0 {
 		tx-pins {
 			pinmux = <GPIOMUX(5, GPOUT_SYS_UART0_TX,
