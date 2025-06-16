@@ -7,13 +7,11 @@
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/leds/common.h>
-#include <dt-bindings/pinctrl/starfive,jh7110-pinfunc.h>
+#include "jh7110-pinfunc.h"
 #include "jh7110.dtsi"
-#include "codecs/sf_pwmdac.dtsi"
-#include "codecs/sf_hdmi.dtsi"
 
 / {
-	model = "Xunlong Orange Pi RV";
+	model = "Orange Pi RV";
 	compatible = "starfive,jh7110-orangepi-rv", "starfive,jh7110";
 
 	gpio-restart {
@@ -126,6 +124,57 @@
 	};
 
 
+	sound1: snd-card1 {
+		compatible = "simple-audio-card";
+		simple-audio-card,name = "Starfive-HDMI-Sound-Card";
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+	
+	sound3: snd-card3 {
+		compatible = "simple-audio-card";
+		simple-audio-card,name = "Starfive-PWMDAC-Sound-Card";
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+};
+
+&sound1 {
+	/* i2s + hdmi */
+	simple-audio-card,dai-link@0 {
+		reg = <0>;
+		format = "i2s";
+		bitclock-master = <&sndi2s0>;
+		frame-master = <&sndi2s0>;
+		mclk-fs = <256>;
+		status = "okay";
+
+		sndi2s0: cpu {
+			sound-dai = <&i2stx_4ch0>;
+		};
+
+		sndhdmi0: codec {
+			sound-dai = <&hdmi>;
+		};
+	};
+};
+
+&sound3 {
+	simple-audio-card,dai-link@0 {
+		reg = <0>;
+		format = "left_j";
+		bitclock-master = <&sndcpu0>;
+		frame-master = <&sndcpu0>;
+		status = "okay";
+
+		sndcpu0: cpu {
+			sound-dai = <&pwmdac>;
+		};
+
+		codec {
+			sound-dai = <&pwmdac_codec>;
+		};
+	};
 };
 
 &gpio {
