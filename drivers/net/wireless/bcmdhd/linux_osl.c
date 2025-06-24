@@ -2019,7 +2019,7 @@ osl_timer_del(osl_t *osh, osl_timer_t *t)
 	if (t->set) {
 		t->set = FALSE;
 		if (t->timer) {
-			del_timer(t->timer);
+			del_timer_sync(t->timer);
 			MFREE(NULL, t->timer, sizeof(timer_list_compat_t));
 		}
 #ifdef BCMDBG
