@@ -26,10 +26,10 @@ extern int sunxi_wlan_get_oob_irq(int *, int *);
 extern int get_custom_mac_address(int fmt, char *name, char *addr);
 #endif
 
-#ifdef CUSTOMER_HW_KY
-extern void ky_sdio_detect_change(int enable_scan);
-extern void ky_wlan_set_power(bool on_off);
-extern int ky_wlan_get_oob_irq(void);
+#ifdef CUSTOMER_HW_SPACEMIT
+extern void spacemit_sdio_detect_change(int enable_scan);
+extern void spacemit_wlan_set_power(bool on_off);
+extern int spacemit_wlan_get_oob_irq(void);
 #endif
 
 
@@ -61,9 +61,9 @@ dhd_wlan_set_power(int on, wifi_adapter_info_t *adapter)
 				return -EIO;
 			}
 		}
-#ifdef CUSTOMER_HW_KY
-		ky_wlan_set_power(1);
-		ky_sdio_detect_change(1);
+#ifdef CUSTOMER_HW_SPACEMIT
+		spacemit_wlan_set_power(1);
+		spacemit_sdio_detect_change(1);
 #endif
 #ifdef CUSTOMER_HW_ALLWINNER
 		sunxi_wlan_set_power(1);
@@ -106,9 +106,9 @@ dhd_wlan_set_power(int on, wifi_adapter_info_t *adapter)
 				return -EIO;
 			}
 		}
-#if defined(BCMSDIO) && defined (CUSTOMER_HW_KY)
-		//ky_sdio_detect_change(0);
-		ky_wlan_set_power(0);
+#if defined(BCMSDIO) && defined (CUSTOMER_HW_SPACEMIT)
+		//spacemit_sdio_detect_change(0);
+		spacemit_wlan_set_power(0);
 #endif
 #if defined(BCMSDIO) && defined (CUSTOMER_HW_ALLWINNER)
 		sunxi_wlan_set_power(0);
@@ -357,8 +357,8 @@ dhd_wlan_init_gpio(wifi_adapter_info_t *adapter)
 #else
 	host_oob_irq_flags = IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHLEVEL | IORESOURCE_IRQ_SHAREABLE;
 #endif
-#ifdef CUSTOMER_HW_KY
-	host_oob_irq = ky_wlan_get_oob_irq();
+#ifdef CUSTOMER_HW_SPACEMIT
+	host_oob_irq = spacemit_wlan_get_oob_irq();
 	host_oob_irq_flags = IORESOURCE_IRQ | IRQF_TRIGGER_RISING | IORESOURCE_IRQ_SHAREABLE;
 #endif
 #else
