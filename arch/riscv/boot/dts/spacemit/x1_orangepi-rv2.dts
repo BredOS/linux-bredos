@@ -180,7 +180,7 @@
 		compatible = "wlan-platdata";
 		wifi_chip_type = "ap6256";
 		pinctrl-names = "default";
-		pinctrl-0 = <&wlan_wakeup_grp>;
+		pinctrl-0 = <&pinctrl_wlan_wakeup>;
 		WIFI,host_wake_irq = <&gpio 66 GPIO_ACTIVE_HIGH>; //WIFI_WAKE_HOST
 		WIFI,poweren_gpio = <&gpio 67 GPIO_ACTIVE_HIGH>; //WL_REG_ON
 		status = "okay";
