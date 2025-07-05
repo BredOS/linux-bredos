@@ -171,9 +171,18 @@
 		};
 	};
 
-	ap6256_wifi: ap6256_wifi {
-		compatible = "android,bcmdhd_wlan";
-		gpio_wl_reg_on = <&gpio 67 GPIO_ACTIVE_HIGH>;
+	// ap6256_wifi: ap6256_wifi {
+	// 	compatible = "android,bcmdhd_wlan";
+	// 	gpio_wl_reg_on = <&gpio 67 GPIO_ACTIVE_HIGH>;
+	// };
+	wireless_wlan: wireless-wlan {
+		compatible = "wlan-platdata";
+		wifi_chip_type = "ap6256";
+		pinctrl-names = "default";
+		pinctrl-0 = <&wlan_wakeup_grp>;
+		WIFI,host_wake_irq = <&gpio 66 GPIO_ACTIVE_HIGH>; //WIFI_WAKE_HOST
+		WIFI,poweren_gpio = <&gpio 67 GPIO_ACTIVE_HIGH>; //WL_REG_ON
+		status = "okay";
 	};
 };
 
@@ -273,10 +282,10 @@
 		};
 	};
 
-	es8323: es8323@11 {
+	es8388: es8388@11 {
 		status = "okay";
 		#sound-dai-cells = <0>;
-		compatible = "everest,es8323";
+		compatible = "everest,es8388", "everest,es8328";
 		reg = <0x11>;
 		earphone-sw-gpio = <&gpio 79 0>;
         };
@@ -1117,10 +1126,10 @@
 
 &sound_codec {
 	status = "okay";
-	simple-audio-card,name = "snd-es8323";
+	simple-audio-card,name = "snd-es8388";
 	spacemit,mclk-fs = <256>;
 	simple-audio-card,codec {
-		sound-dai = <&es8323>;
+		sound-dai = <&es8388>;
 	};
 };
 
