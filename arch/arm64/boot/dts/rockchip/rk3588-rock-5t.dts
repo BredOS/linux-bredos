@@ -29,8 +29,8 @@
 	fan0: pwm-fan {
 		compatible = "pwm-fan";
 		#cooling-cells = <2>;
-		cooling-levels = <0 64 128 192 255>;
-		pwms = <&pwm1 0 60000 0>;
+		cooling-levels = <82 136 170 255>;
+		pwms = <&pwm1 0 10000 0>;
 	};
 
 	vcc12v_dcin: vcc12v-dcin {
@@ -149,6 +149,8 @@
 	vcc5v0_host: vcc5v0-host-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc5v0_host";
+		regulator-boot-on;
+		regulator-always-on;
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 		enable-active-high;
@@ -219,7 +221,8 @@
 
 		user-led2 {
 			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "heartbeat";
+			linux,default-trigger = "default-on";
+			default-state = "on";
 		};
 	};
 
@@ -720,7 +723,6 @@
 };
 
 &u2phy1_otg {
-	vbus-supply = <&vcc5v0_host>;
 	status = "okay";
 };
 
@@ -938,24 +940,42 @@
 	status = "okay";
 };
 
-&threshold {
-	temperature = <60000>;
-};
-
 &soc_thermal {
-	sustainable-power = <5000>; /* milliwatts */
-	cooling-maps {
-		map4 {
-			trip = <&target>;
-			cooling-device =
-				<&fan0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-			contribution = <8192>;
+    sustainable-power = <5000>; /* milliwatts */
+	polling-delay = <20000>;
+	polling-delay-passive = <20000>;
+	trips {
+		trip0: trip-point@0 {
+			temperature = <65000>;
+			hysteresis = <15000>;
+			type = "active";
 		};
-		map5 {
-			trip = <&threshold>;
-			cooling-device =
-				<&fan0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-			contribution = <8192>;
+		trip1: trip-point@1 {
+			temperature = <72000>;
+			hysteresis = <2000>;
+			type = "active";
+		};
+		pcritical: trip-point@2 {
+			temperature = <80000>;
+			hysteresis = <1000>;
+			type = "active";
+		};
+	};
+	cooling-maps {
+		map0 {
+			trip = <&trip0>;
+			cooling-device = <&fan0 0 1>;
+			contribution = <1024>;
+		};
+		map1 {
+			trip = <&trip1>;
+			cooling-device = <&fan0 1 2>;
+			contribution = <1024>;
+		};
+		map2 {
+			trip = <&pcritical>;
+			cooling-device = <&fan0 2 3>;
+			contribution = <1024>;
 		};
 	};
 };
