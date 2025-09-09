@@ -19,7 +19,6 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nanopi5-rev03.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nanopi5-rev04.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nanopi5-rev05.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-nanopi5-rev07.dtb
-dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-odroid-m1.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-ok3568c.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-radxa-e25.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-rock-3a.dtb
