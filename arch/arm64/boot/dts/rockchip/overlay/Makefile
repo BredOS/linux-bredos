@@ -32,21 +32,6 @@ dtbo-$(CONFIG_ARCH_ROCKCHIP) += \
 	orangepi-5-ultra-cam0.dtbo \
 	orangepi-5-ultra-cam1.dtbo \
 	orangepi-5-ultra-cam2.dtbo \
-	orangepi-5-ov5647-c1.dtbo \
-	orangepi-5-ov5647-c2.dtbo \
-	orangepi-5-ov5647-c3.dtbo \
-	orangepi-5-imx219-c1.dtbo \
-	orangepi-5-imx219-c2.dtbo \
-	orangepi-5-imx219-c3.dtbo \
-	orangepi-5-imx708-c1.dtbo \
-	orangepi-5-imx708-c2.dtbo \
-	orangepi-5-imx708-c3.dtbo \
-	orangepi-5-ov13850-c1.dtbo \
-	orangepi-5-ov13850-c2.dtbo \
-	orangepi-5-ov13850-c3.dtbo \
-	orangepi-5-ov13855-c1.dtbo \
-	orangepi-5-ov13855-c2.dtbo \
-	orangepi-5-ov13855-c3.dtbo \
 	orangepi-cm5-blink-gpio.dtbo \
 	orangepi-cm5-cam1.dtbo \
 	orangepi-cm5-cam2.dtbo \
