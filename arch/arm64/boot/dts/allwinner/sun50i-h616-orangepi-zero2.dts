@@ -13,7 +13,7 @@
 #include <dt-bindings/leds/common.h>
 
 / {
-	model = "OrangePi Zero2";
+	model = "Orange Pi Zero 2";
 	compatible = "xunlong,orangepi-zero2", "allwinner,sun50i-h616";
 
 	aliases {
