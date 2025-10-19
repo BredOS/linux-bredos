@@ -12,6 +12,14 @@
 	model = "Xunlong Orange Pi 5 Ultra";
 	compatible = "xunlong,orangepi-5-ultra", "rockchip,rk3588";
 
+	bcmdhd_wlan {
+		compatible = "android,bcmdhd_wlan";
+		pinctrl-names = "default";
+		pinctrl-0 = <&wifi_host_wake_irq>;
+		gpio_wl_reg_on = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;        /* wifi reg_on pin */
+        gpio_wl_host_wake = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;      /* wifi host wake (OOB) pin */
+	};
+
 	hdmi1-con {
 		compatible = "hdmi-connector";
 		type = "a";
@@ -67,6 +75,12 @@
 	usb {
 		usb_otg_pwren: usb-otg-pwren {
 			rockchip,pins = <4 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	wireless-wlan {
+		wifi_host_wake_irq: wifi-host-wake-irq {
+			rockchip,pins = <0 RK_PB0 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 	};
 };
