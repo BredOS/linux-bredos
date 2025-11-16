@@ -14,7 +14,7 @@
 #include "k1-x_thermal_cooling.dtsi"
 
 / {
-	model = "spacemit k1-x orangepi-r2s board";
+	model = "Orange Pi R2S";
 	compatible = "k1-x,orangepi-r2s", "spacemit,k1-x";
 
 	cpus: cpus {

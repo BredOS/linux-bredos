@@ -14,7 +14,7 @@
 #include "k1-x_thermal_cooling.dtsi"
 
 / {
-	model = "Orange Pi RV 2";
+	model = "Orange Pi RV2";
 
 	cpus: cpus {
 		#address-cells = <1>;
