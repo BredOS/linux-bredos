@@ -159,6 +159,14 @@
 		};
 	};
 
+	bcmdhd_wlan {
+		compatible = "android,bcmdhd_wlan";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_wlan_wakeup>;
+		gpio_wl_reg_on = <&gpio 67 GPIO_ACTIVE_HIGH>;        /* wifi reg_on pin */
+		gpio_wl_host_wake = <&gpio 66 GPIO_ACTIVE_HIGH>;      /* wifi host wake (OOB) pin */
+	};
+
 	leds {
 		compatible = "gpio-leds";
 
@@ -169,11 +177,6 @@
 			default-state = "on";
 			status = "okay";
 		};
-	};
-
-	ap6256_wifi: ap6256_wifi {
-		compatible = "android,bcmdhd_wlan";
-		gpio_wl_reg_on = <&gpio 67 GPIO_ACTIVE_HIGH>;
 	};
 };
 
